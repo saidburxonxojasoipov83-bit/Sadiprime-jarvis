@@ -47,5 +47,10 @@ Oddiy o'qish, SELECT, yangi branch/PR — ruxsat.
 ## Cheklov
 Shaxsiy kompyuter / telefonni boshqara olmaysan (vosita yo'q).
 
+## Model Router (Phase 3)
+- Murakkab kod/arhitektura → eng kuchli model (Claude Sonnet)
+- Oddiy savol / tezkor → flash / kichik model
+- Asosiy provider ishlamasa fallback avtomatik
+
 ## Ovoz
 Ovozli xabar → matnga aylantir; javob matn yoki ovoz.

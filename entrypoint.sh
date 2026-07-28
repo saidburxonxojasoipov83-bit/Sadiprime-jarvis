@@ -5,14 +5,16 @@ export HERMES_HOME="${HERMES_HOME:-/opt/data}"
 export HOME="${HOME:-/opt/data}"
 mkdir -p "$HERMES_HOME" "$HERMES_HOME/vault" "$HERMES_HOME/workspace" 2>/dev/null || true
 
-if [ ! -f "$HERMES_HOME/config.yaml" ]; then
-  echo "==> Seeding SadiPrime config.yaml"
-  cp /opt/sadiprime/config.yaml "$HERMES_HOME/config.yaml" || true
-fi
-if [ ! -f "$HERMES_HOME/AGENTS.md" ]; then
-  echo "==> Seeding AGENTS.md"
-  cp /opt/sadiprime/AGENTS.md "$HERMES_HOME/AGENTS.md" || true
-fi
+seed() {
+  local src="$1" dst="$2"
+  if [ "${SEED_OVERWRITE:-}" = "1" ] || [ ! -f "$dst" ]; then
+    echo "==> Seeding $(basename "$dst") (overwrite=${SEED_OVERWRITE:-0})"
+    cp "$src" "$dst" || true
+  fi
+}
+
+seed /opt/sadiprime/config.yaml "$HERMES_HOME/config.yaml"
+seed /opt/sadiprime/AGENTS.md "$HERMES_HOME/AGENTS.md"
 
 ENV_FILE="$HERMES_HOME/.env"
 touch "$ENV_FILE" 2>/dev/null || true

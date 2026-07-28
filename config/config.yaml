@@ -1,16 +1,15 @@
-# SadiPrime Jarvis — config.yaml (Railway: ${HERMES_HOME}/config.yaml)
-# Secrets faqat env orqali: ${VAR}
+# SadiPrime Jarvis — config.yaml
+# Secrets: faqat ${ENV}
 
 # ---------------------------------------------------------------------------
-# PHASE 1 MEMORY MAP (arxitektura)
-#   Working Memory     → Redis        (REDIS_URL)
-#   Conversation/Long  → PostgreSQL   (DATABASE_URL)
-#   Knowledge/Notes    → Obsidian vault (${HERMES_HOME}/vault)
-#   Semantic/Vector    → Phase 4 (Qdrant)
+# PHASE 1 MEMORY
+#   Working → Redis (REDIS_URL)
+#   Conversation/Long → PostgreSQL (DATABASE_URL)
+#   Knowledge → Obsidian vault
+#   Semantic → Phase 4 Qdrant
 # ---------------------------------------------------------------------------
 
 mcp_servers:
-  # Knowledge Memory — Markdown vault (doimiy disk)
   obsidian:
     command: "npx"
     args: ["-y", "obsidian-mcp", "${HERMES_HOME}/vault"]
@@ -18,25 +17,21 @@ mcp_servers:
       exclude: []
     enabled: true
 
-  # Filesystem — workspace (kod, loyihalar)
   filesystem:
     command: "npx"
     args: ["-y", "@modelcontextprotocol/server-filesystem", "${HERMES_HOME}/workspace"]
     enabled: true
 
-  # Browser — Playwright
   browser:
     command: "npx"
     args: ["-y", "@playwright/mcp@latest", "--headless"]
     enabled: true
 
-  # PostgreSQL — Conversation + Long-term memory (DATABASE_URL bo'lsa)
   postgres:
     command: "npx"
     args: ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"]
     enabled: true
 
-  # GitHub — token bo'lsa yoqing
   github:
     command: "npx"
     args: ["-y", "@modelcontextprotocol/server-github"]
@@ -69,7 +64,11 @@ tts:
   speed: 1.0
 
 # ---------------------------------------------------------------------------
-# LLM — Model Router (Phase 3 da kengaytiriladi)
+# PHASE 3 — MODEL ROUTER & LLM MANAGEMENT
+# Diagramma: ModelRouter | LoadBalancer | Fallback | CostOptimizer | Aggregator
+#
+# Asosiy: OpenRouter (ko'p model bitta kalit)
+# Zaxira zanjiri: Gemini → Mistral → Cerebras
 # ---------------------------------------------------------------------------
 model:
   provider: "openrouter"
@@ -77,16 +76,31 @@ model:
   api_mode: "chat_completions"
 
 providers:
-  cerebras:
+  openrouter:
     type: "openai"
-    base_url: "https://api.cerebras.ai/v1"
-    key_env: "CEREBRAS_API_KEY"
+    base_url: "https://openrouter.ai/api/v1"
+    key_env: "OPENROUTER_API_KEY"
+  gemini:
+    type: "openai"
+    base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
+    key_env: "GEMINI_API_KEY"
   mistral:
     type: "openai"
     base_url: "https://api.mistral.ai/v1"
     key_env: "MISTRAL_API_KEY"
+  cerebras:
+    type: "openai"
+    base_url: "https://api.cerebras.ai/v1"
+    key_env: "CEREBRAS_API_KEY"
+  anthropic:
+    type: "anthropic"
+    key_env: "ANTHROPIC_API_KEY"
 
 fallback_providers:
+  - provider: "openrouter"
+    model: "anthropic/claude-sonnet-4.6"
+  - provider: "openrouter"
+    model: "google/gemini-2.0-flash-001"
   - provider: "gemini"
     model: "gemini-2.0-flash"
   - provider: "mistral"
@@ -95,14 +109,14 @@ fallback_providers:
     model: "llama-3.3-70b"
 
 # ---------------------------------------------------------------------------
-# Terminal (vibe coding) — konteyner ichida
+# Terminal
 # ---------------------------------------------------------------------------
 terminal:
   backend: "local"
   persistent_shell: true
 
 # ---------------------------------------------------------------------------
-# Telegram Gateway
+# Telegram
 # ---------------------------------------------------------------------------
 gateway:
   platforms:
