@@ -1,25 +1,25 @@
 # SadiPrime Jarvis AI
 
-Hermes + Railway + Telegram — arxitektura bosqichma-bosqich.
+Hermes Agent + Railway + Telegram.
+Arxitektura: `docs/ARCHITECTURE.md`
 
-## Holat
+## Phase holati
 
-| Phase | Qism | Holat |
-|-------|------|--------|
+| # | Qism | Holat |
+|---|------|--------|
 | 0 | Gateway + Telegram | ✅ |
-| 1 | Memory (Postgres/Redis/Vault) | ⏳ Railway DB |
-| 2 | Multi-Agent Layer | ✅ |
-| 3 | Model Router + Fallback | ✅ |
-| 4 | Knowledge Hub + Vector | ✅ kod (Qdrant ixtiyoriy) |
-| 5 | Dashboard + Security layer | keyin |
+| 1 | Memory (Postgres/Redis) | ⏳ siz qo'shasiz |
+| 2 | Multi-Agent | ✅ |
+| 3 | Model Router | ✅ |
+| 4 | Knowledge + Vector | ✅ |
+| 5 | Security + Ops | ✅ |
 
-## Variables
-- Telegram: TELEGRAM_BOT_TOKEN, TELEGRAM_ALLOWED_USERS
-- LLM: OPENROUTER_API_KEY (+ GEMINI/MISTRAL/CEREBRAS)
-- DB: DATABASE_URL, REDIS_URL
-- Vector: QDRANT_URL, QDRANT_API_KEY
-- Yangi config: SEED_OVERWRITE=1
-- Volume: /opt/data
+## Tez start
+1. Railway ← GitHub Sadiprime-jarvis
+2. Volume `/opt/data`
+3. Vars: TELEGRAM_BOT_TOKEN, TELEGRAM_ALLOWED_USERS, OPENROUTER_API_KEY
+4. SEED_OVERWRITE=1 → redeploy → o'chiring
+5. Telegram: /sethome keyin Salom
 
 ## Docs
-docs/PHASE1_MEMORY.md … docs/PHASE4_KNOWLEDGE.md
+PHASE1 … PHASE5 + ARCHITECTURE.md
