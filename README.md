@@ -1,78 +1,33 @@
 # SadiPrime Jarvis AI
 
-Iron Man level shaxsiy AI-yordamchi — Hermes Agent asosida.  
-Railway'da 24/7 ishlaydi. Telegram orqali boshqariladi.
+Iron Man level shaxsiy AI — Hermes Agent + Railway + Telegram.
 
-```
-Siz (Telegram)
-      │
-      ▼
-Railway (Hermes + SadiPrime config)
-      ├── Obsidian vault (xotira)
-      ├── Kod yozish (terminal)
-      ├── GitHub / Render / Supabase / Browser
-      ├── STT / TTS
-      └── LLM: OpenRouter → Gemini → Mistral → Cerebras
-```
+## Holat
 
-## Tez deploy (Railway)
+| Phase | Qism | Holat |
+|-------|------|--------|
+| 0 | Hermes + Telegram + Railway | ✅ |
+| 1 | Memory (Postgres + Redis + Vault) | ⏳ Railway DB |
+| 2 | Multi-Agent Layer | ✅ kod |
+| 3 | Model Router | keyin |
+| 4 | Vector / Knowledge Hub | keyin |
+| 5 | Dashboard + Core Brain kengaytmasi | keyin |
 
-1. https://railway.com → **New Project** → **Deploy from GitHub repo**
-2. `saidburxonxojasoipov83-bit/Sadiprime-jarvis` ni tanlang
-3. **Volume** qo'shing: mount path = `/data`
-4. **Variables** ga quyidagilarni yozing:
-
-| Variable | Majburiy | Qayerdan |
-|----------|----------|----------|
-| `TELEGRAM_BOT_TOKEN` | ✅ | @BotFather |
-| `TELEGRAM_ALLOWED_USERS` | ✅ | @userinfobot (raqamli ID) |
-| `OPENROUTER_API_KEY` | ✅ | openrouter.ai/keys |
-| `GITHUB_PERSONAL_ACCESS_TOKEN` | ixtiyoriy | GitHub Settings |
-| `RENDER_API_KEY` | ixtiyoriy | Render dashboard |
-| `SUPABASE_ACCESS_TOKEN` | ixtiyoriy | Supabase |
-| `DATABASE_URL` | ixtiyoriy | Postgres connection string |
-| `GROQ_API_KEY` | ixtiyoriy | STT zaxira |
-| `ELEVENLABS_API_KEY` | ixtiyoriy | sifatli TTS |
-
-5. **Deploy** bosing
-6. Telegramda botga yozing: `Salom! O'zingni tanishtir.`
-
-> Volume `/data` bo'lmasa — har redeployda xotira yo'qoladi.
+## Deploy
+1. Railway → GitHub repo `Sadiprime-jarvis`
+2. Volume: `/opt/data`
+3. Variables: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ALLOWED_USERS`, `OPENROUTER_API_KEY`
+4. (Phase 1) Postgres + Redis → `DATABASE_URL`, `REDIS_URL`
 
 ## Fayllar
-
 ```
-Sadiprime-jarvis/
-├── Dockerfile          — Hermes + SadiPrime
-├── entrypoint.sh       — config seed + gateway start
-├── railway.toml
-├── .env.example
-├── .gitignore
-├── setup.sh            — lokal o'rnatish
-└── config/
-    ├── config.yaml     — MCP, STT/TTS, model, Telegram
-    └── AGENTS.md       — rol + xavfsizlik qoidalari
+├── Dockerfile / entrypoint.sh / railway.toml
+├── config/config.yaml
+├── config/AGENTS.md          ← Orchestrator
+├── config/agents/*.md        ← Phase 2 rollar
+└── docs/PHASE1_MEMORY.md
+└── docs/PHASE2_AGENTS.md
 ```
-
-## Arxitektura yo'li (bosqichma-bosqich)
-
-| Phase | Nima | Holat |
-|-------|------|-------|
-| 0 | Hermes + Telegram + Railway | **Hozir** |
-| 1 | Redis + Postgres memory | Keyin |
-| 2 | Multi-agent (Coding, Research, Personal) | |
-| 3 | Web Dashboard + WebSocket | |
-| 4 | Vector DB (Qdrant) + Knowledge Hub | |
-| 5 | Full Core Brain + Security + K8s | |
 
 ## Xavfsizlik
-
-- `.env` GitHub'ga kirmaydi
-- `TELEGRAM_ALLOWED_USERS` — faqat sizning ID
-- `AGENTS.md` — force push, DROP, o'chirish oldidan tasdiq so'raydi
-
-## Havolalar
-
-- Hermes docs: https://hermes-agent.nousresearch.com/docs/
-- OpenRouter: https://openrouter.ai/keys
-- Railway: https://railway.com
+Halokatli amallar — tasdiq. Tokenlarni GitHub'ga qo'ymang.
