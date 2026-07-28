@@ -1,32 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export HERMES_HOME="${HERMES_HOME:-/data/hermes}"
-export HOME="${HOME:-/data}"
-mkdir -p "$HERMES_HOME" "$HERMES_HOME/vault" "$HERMES_HOME/workspace"
+export HERMES_HOME="${HERMES_HOME:-/opt/data}"
+export HOME="${HOME:-/opt/data}"
+mkdir -p "$HERMES_HOME" "$HERMES_HOME/vault" "$HERMES_HOME/workspace" 2>/dev/null || true
 
-# Seed config if missing
+# Seed SadiPrime config once
 if [ ! -f "$HERMES_HOME/config.yaml" ]; then
-  echo "==> Seeding config.yaml from SadiPrime template"
-  cp /opt/sadiprime/config.yaml "$HERMES_HOME/config.yaml"
+  echo "==> Seeding SadiPrime config.yaml"
+  cp /opt/sadiprime/config.yaml "$HERMES_HOME/config.yaml" || true
 fi
-
 if [ ! -f "$HERMES_HOME/AGENTS.md" ]; then
   echo "==> Seeding AGENTS.md"
-  cp /opt/sadiprime/AGENTS.md "$HERMES_HOME/AGENTS.md"
+  cp /opt/sadiprime/AGENTS.md "$HERMES_HOME/AGENTS.md" || true
 fi
 
-# Write .env from Railway Variables (if present)
+# Sync Railway Variables into .env
 ENV_FILE="$HERMES_HOME/.env"
-touch "$ENV_FILE"
+touch "$ENV_FILE" 2>/dev/null || true
 
-write_var() {
+sync_var() {
   local key="$1"
   local val="${!key:-}"
   if [ -n "$val" ]; then
-    grep -v "^${key}=" "$ENV_FILE" > "${ENV_FILE}.tmp" 2>/dev/null || true
-    mv "${ENV_FILE}.tmp" "$ENV_FILE" 2>/dev/null || true
-    echo "${key}=${val}" >> "$ENV_FILE"
+    if grep -q "^${key}=" "$ENV_FILE" 2>/dev/null; then
+      sed -i "s|^${key}=.*|${key}=${val}|" "$ENV_FILE" 2>/dev/null || true
+    else
+      echo "${key}=${val}" >> "$ENV_FILE"
+    fi
   fi
 }
 
@@ -38,24 +39,14 @@ for key in \
   GITHUB_PERSONAL_ACCESS_TOKEN RENDER_API_KEY \
   SUPABASE_ACCESS_TOKEN DATABASE_URL
 do
-  write_var "$key"
+  sync_var "$key" || true
 done
 
 echo "==> HERMES_HOME=$HERMES_HOME"
 echo "==> Starting Hermes gateway..."
 
-if [ -f /opt/hermes/.venv/bin/activate ]; then
-  source /opt/hermes/.venv/bin/activate
-fi
-
-cd "$HERMES_HOME"
-
 if command -v hermes >/dev/null 2>&1; then
-  exec hermes gateway start
-elif [ -x /opt/hermes/.venv/bin/hermes ]; then
-  exec /opt/hermes/.venv/bin/hermes gateway start
+  exec hermes gateway run
 else
-  echo "ERROR: hermes binary not found. Check build logs."
-  ls -la /opt/hermes/ || true
-  exit 1
+  exec hermes gateway start
 fi
