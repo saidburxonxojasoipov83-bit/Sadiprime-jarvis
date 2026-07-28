@@ -5,7 +5,6 @@ export HERMES_HOME="${HERMES_HOME:-/opt/data}"
 export HOME="${HOME:-/opt/data}"
 mkdir -p "$HERMES_HOME" "$HERMES_HOME/vault" "$HERMES_HOME/workspace" 2>/dev/null || true
 
-# Seed SadiPrime config once
 if [ ! -f "$HERMES_HOME/config.yaml" ]; then
   echo "==> Seeding SadiPrime config.yaml"
   cp /opt/sadiprime/config.yaml "$HERMES_HOME/config.yaml" || true
@@ -15,7 +14,6 @@ if [ ! -f "$HERMES_HOME/AGENTS.md" ]; then
   cp /opt/sadiprime/AGENTS.md "$HERMES_HOME/AGENTS.md" || true
 fi
 
-# Sync Railway Variables into .env
 ENV_FILE="$HERMES_HOME/.env"
 touch "$ENV_FILE" 2>/dev/null || true
 
@@ -37,7 +35,7 @@ for key in \
   GROQ_API_KEY ELEVENLABS_API_KEY \
   GEMINI_API_KEY MISTRAL_API_KEY CEREBRAS_API_KEY \
   GITHUB_PERSONAL_ACCESS_TOKEN RENDER_API_KEY \
-  SUPABASE_ACCESS_TOKEN DATABASE_URL
+  SUPABASE_ACCESS_TOKEN DATABASE_URL REDIS_URL
 do
   sync_var "$key" || true
 done
