@@ -1,88 +1,78 @@
-# SadiPrime Jarvis AI — Hermes + Obsidian + Telegram (Railway'da)
+# SadiPrime Jarvis AI
 
-Bulutda 24/7 ishlaydigan shaxsiy AI-yordamchi. Sizda kompyuter yo'qligi
-sababli hammasi Railway'ning bulut serverida ishlaydi, siz faqat
-Telegram orqali muloqot qilasiz.
+Iron Man level shaxsiy AI-yordamchi — Hermes Agent asosida.  
+Railway'da 24/7 ishlaydi. Telegram orqali boshqariladi.
 
 ```
-Siz (Telegram, telefondan)
+Siz (Telegram)
       │
       ▼
-Railway bulut serveri
-      │
-      ├── Hermes Agent (gateway + agent loop)
-      ├── Obsidian-uslubidagi vault (serverning o'z diskida)
-      ├── STT: faster-whisper (lokal, server ichida)
-      ├── TTS: Piper (lokal, server ichida)
-      ├── Terminal/kod yozish (Jarvisning o'z konteynerida)
-      └── LLM: OpenRouter → Gemini → Mistral → Cerebras (zaxira zanjiri)
+Railway (Hermes + SadiPrime config)
+      ├── Obsidian vault (xotira)
+      ├── Kod yozish (terminal)
+      ├── GitHub / Render / Supabase / Browser
+      ├── STT / TTS
+      └── LLM: OpenRouter → Gemini → Mistral → Cerebras
 ```
 
-**Nima ishlaydi, nima ishlamaydi:**
+## Tez deploy (Railway)
 
-| Funksiya | Holat |
-|---|---|
-| Telegram orqali suhbat | ✅ |
-| Obsidian-uslubidagi xotira (vault) | ✅ (serverda saqlanadi) |
-| Kod yozish/ishga tushirish | ✅ (Jarvisning o'z konteynerida) |
-| GitHub (repo, push, PR, issue) | ✅ |
-| Render (deploy, loglar, boshqaruv) | ✅ |
-| Supabase (baza, auth, storage) | ✅ |
-| PostgreSQL (to'g'ridan-to'g'ri SQL) | ✅ |
-| Brauzer (Playwright — sahifa ochish, test) | ✅ |
-| Ovozli xabar (STT/TTS) | ✅ |
-| Sizning shaxsiy kompyuteringizni boshqarish | ❌ (kompyuter yo'q) |
-| Sizning telefoningizni masofadan boshqarish | ❌ (texnik jihatdan bulutdan imkonsiz) |
+1. https://railway.com → **New Project** → **Deploy from GitHub repo**
+2. `saidburxonxojasoipov83-bit/Sadiprime-jarvis` ni tanlang
+3. **Volume** qo'shing: mount path = `/data`
+4. **Variables** ga quyidagilarni yozing:
 
-> Telefonni masofadan boshqarish uchun boshqaruvchi dastur jismonan telefon
-> bilan bir tarmoqda yoki USB orqali ulangan bo'lishi kerak. Bulutdagi
-> server buni qila olmaydi.
+| Variable | Majburiy | Qayerdan |
+|----------|----------|----------|
+| `TELEGRAM_BOT_TOKEN` | ✅ | @BotFather |
+| `TELEGRAM_ALLOWED_USERS` | ✅ | @userinfobot (raqamli ID) |
+| `OPENROUTER_API_KEY` | ✅ | openrouter.ai/keys |
+| `GITHUB_PERSONAL_ACCESS_TOKEN` | ixtiyoriy | GitHub Settings |
+| `RENDER_API_KEY` | ixtiyoriy | Render dashboard |
+| `SUPABASE_ACCESS_TOKEN` | ixtiyoriy | Supabase |
+| `DATABASE_URL` | ixtiyoriy | Postgres connection string |
+| `GROQ_API_KEY` | ixtiyoriy | STT zaxira |
+| `ELEVENLABS_API_KEY` | ixtiyoriy | sifatli TTS |
 
----
+5. **Deploy** bosing
+6. Telegramda botga yozing: `Salom! O'zingni tanishtir.`
 
-## Sizga qolgan yagona ishlar
+> Volume `/data` bo'lmasa — har redeployda xotira yo'qoladi.
 
-### A. Kalitlarni olish
-- [ ] Telegram bot: `@BotFather` → `/newbot` → tokenni saqlang
-- [ ] Telegram user ID: `@userinfobot` → raqamni saqlang
-- [ ] OpenRouter kalit: https://openrouter.ai/keys
-- [ ] (ixtiyoriy) Gemini, Mistral, Cerebras, GitHub, Render, Supabase
-
-### B. Railway'da ishga tushirish
-- [ ] https://railway.com — GitHub bilan ro'yxatdan o'ting
-- [ ] New Project → Deploy from GitHub → `Sadiprime-jarvis`
-- [ ] Variables ga kalitlarni kiriting (`.env.example` ga qarang)
-- [ ] Deploy
-
-### C. Tekshirish
-Telegramda botga yozing:
-```
-Salom! O'zingni tanishtir.
-```
-
----
-
-## Fayllar tuzilishi
+## Fayllar
 
 ```
 Sadiprime-jarvis/
-├── README.md
+├── Dockerfile          — Hermes + SadiPrime
+├── entrypoint.sh       — config seed + gateway start
+├── railway.toml
 ├── .env.example
 ├── .gitignore
-├── setup.sh
+├── setup.sh            — lokal o'rnatish
 └── config/
-    ├── config.yaml
-    └── AGENTS.md
+    ├── config.yaml     — MCP, STT/TTS, model, Telegram
+    └── AGENTS.md       — rol + xavfsizlik qoidalari
 ```
+
+## Arxitektura yo'li (bosqichma-bosqich)
+
+| Phase | Nima | Holat |
+|-------|------|-------|
+| 0 | Hermes + Telegram + Railway | **Hozir** |
+| 1 | Redis + Postgres memory | Keyin |
+| 2 | Multi-agent (Coding, Research, Personal) | |
+| 3 | Web Dashboard + WebSocket | |
+| 4 | Vector DB (Qdrant) + Knowledge Hub | |
+| 5 | Full Core Brain + Security + K8s | |
 
 ## Xavfsizlik
 
-- `.env` hech qachon GitHub'ga push qilinmaydi
-- `TELEGRAM_ALLOWED_USERS` ga faqat o'zingizning ID
-- Halokatli amallar uchun `config/AGENTS.md` da tasdiqlash qoidasi bor
+- `.env` GitHub'ga kirmaydi
+- `TELEGRAM_ALLOWED_USERS` — faqat sizning ID
+- `AGENTS.md` — force push, DROP, o'chirish oldidan tasdiq so'raydi
 
-## Foydali havolalar
+## Havolalar
 
-- Hermes: https://hermes-agent.nousresearch.com/docs/
-- Railway Hermes: https://railway.com/deploy/hermes-agent-1
-- Obsidian MCP: https://github.com/StevenStavrakis/obsidian-mcp
+- Hermes docs: https://hermes-agent.nousresearch.com/docs/
+- OpenRouter: https://openrouter.ai/keys
+- Railway: https://railway.com
