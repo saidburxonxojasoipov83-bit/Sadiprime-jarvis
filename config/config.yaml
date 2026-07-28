@@ -6,7 +6,7 @@
 #   Working → Redis (REDIS_URL)
 #   Conversation/Long → PostgreSQL (DATABASE_URL)
 #   Knowledge → Obsidian vault
-#   Semantic → Phase 4 Qdrant
+#   Semantic → Qdrant (Phase 4, enabled when QDRANT_URL set)
 # ---------------------------------------------------------------------------
 
 mcp_servers:
@@ -49,6 +49,15 @@ mcp_servers:
     args: ["-y", "@supabase/mcp-server-supabase@latest", "--access-token", "${SUPABASE_ACCESS_TOKEN}"]
     enabled: false
 
+  # Phase 4 — Semantic / Vector (Qdrant)
+  qdrant:
+    command: "npx"
+    args: ["-y", "@qdrant/mcp-server-qdrant"]
+    env:
+      QDRANT_URL: "${QDRANT_URL}"
+      QDRANT_API_KEY: "${QDRANT_API_KEY}"
+    enabled: false
+
 # ---------------------------------------------------------------------------
 # STT / TTS
 # ---------------------------------------------------------------------------
@@ -64,11 +73,7 @@ tts:
   speed: 1.0
 
 # ---------------------------------------------------------------------------
-# PHASE 3 — MODEL ROUTER & LLM MANAGEMENT
-# Diagramma: ModelRouter | LoadBalancer | Fallback | CostOptimizer | Aggregator
-#
-# Asosiy: OpenRouter (ko'p model bitta kalit)
-# Zaxira zanjiri: Gemini → Mistral → Cerebras
+# PHASE 3 — MODEL ROUTER
 # ---------------------------------------------------------------------------
 model:
   provider: "openrouter"
@@ -108,16 +113,10 @@ fallback_providers:
   - provider: "cerebras"
     model: "llama-3.3-70b"
 
-# ---------------------------------------------------------------------------
-# Terminal
-# ---------------------------------------------------------------------------
 terminal:
   backend: "local"
   persistent_shell: true
 
-# ---------------------------------------------------------------------------
-# Telegram
-# ---------------------------------------------------------------------------
 gateway:
   platforms:
     telegram:

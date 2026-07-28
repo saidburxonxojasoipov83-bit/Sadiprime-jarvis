@@ -1,6 +1,6 @@
 # SadiPrime Jarvis AI
 
-Hermes + Railway + Telegram. Arxitektura bosqichma-bosqich.
+Hermes + Railway + Telegram — arxitektura bosqichma-bosqich.
 
 ## Holat
 
@@ -10,17 +10,16 @@ Hermes + Railway + Telegram. Arxitektura bosqichma-bosqich.
 | 1 | Memory (Postgres/Redis/Vault) | ⏳ Railway DB |
 | 2 | Multi-Agent Layer | ✅ |
 | 3 | Model Router + Fallback | ✅ |
-| 4 | Vector / Knowledge Hub | keyin |
-| 5 | Dashboard + Core Brain | keyin |
+| 4 | Knowledge Hub + Vector | ✅ kod (Qdrant ixtiyoriy) |
+| 5 | Dashboard + Security layer | keyin |
 
 ## Variables
-- Majburiy: TELEGRAM_BOT_TOKEN, TELEGRAM_ALLOWED_USERS
+- Telegram: TELEGRAM_BOT_TOKEN, TELEGRAM_ALLOWED_USERS
 - LLM: OPENROUTER_API_KEY (+ GEMINI/MISTRAL/CEREBRAS)
-- Phase 1: DATABASE_URL, REDIS_URL
-- Yangi config: SEED_OVERWRITE=1 (bir marta)
+- DB: DATABASE_URL, REDIS_URL
+- Vector: QDRANT_URL, QDRANT_API_KEY
+- Yangi config: SEED_OVERWRITE=1
 - Volume: /opt/data
 
 ## Docs
-- docs/PHASE1_MEMORY.md
-- docs/PHASE2_AGENTS.md
-- docs/PHASE3_MODEL_ROUTER.md
+docs/PHASE1_MEMORY.md … docs/PHASE4_KNOWLEDGE.md

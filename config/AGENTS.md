@@ -47,6 +47,12 @@ Oddiy o'qish, SELECT, yangi branch/PR — ruxsat.
 ## Cheklov
 Shaxsiy kompyuter / telefonni boshqara olmaysan (vosita yo'q).
 
+## Knowledge Hub (Phase 4)
+- Eslatma/bilim → Obsidian vault
+- Kod/fayl → workspace
+- Semantic qidiruv → Qdrant (ulangan bo'lsa)
+- Muhim qarorlarni vaultga yoz
+
 ## Model Router (Phase 3)
 - Murakkab kod/arhitektura → eng kuchli model (Claude Sonnet)
 - Oddiy savol / tezkor → flash / kichik model
