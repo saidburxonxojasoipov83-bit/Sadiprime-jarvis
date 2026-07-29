@@ -1,14 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>PARI — Prime Intelligence System</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="styles.css"/>
-</head>
-<body>
-<div class="app" id="app"></div>
-<script src="app.js"></script>
-</body>
-</html>
+</head><body><div class="app">
+<header class="topbar">
+<div class="brand"><div class="brand-mark">P</div><div class="brand-text"><span class="brand-name">PARI</span><span class="brand-sub">PRIME INTELLIGENCE SYSTEM</span></div></div>
+<nav class="nav-tabs">
+<button class="tab active">DASHBOARD</button><button class="tab">CONSOLE</button><button class="tab">MEMORY</button><button class="tab">AGENTS</button><button class="tab">AUTOMATIONS</button><button class="tab">SYSTEMS</button><button class="tab">SETTINGS</button>
+</nav>
+<div class="top-right"><span class="online-dot"></span><span class="online-label">ONLINE</span><span class="clock" id="clock">—</span></div>
+</header>
+<main class="grid"><section class="col-left">
+<div class="panel"><div class="panel-head"><span class="panel-title">◈ SYSTEM STATUS</span><span class="badge-ok">ALL SYSTEMS OPERATIONAL</span></div>
+<div class="metrics-row">
+<div class="metric"><span class="m-label">CPU</span><span class="m-val">23%</span><canvas id="sp-cpu" width="56" height="20"></canvas></div>
+<div class="metric"><span class="m-label">RAM</span><span class="m-val">45%</span><canvas id="sp-ram" width="56" height="20"></canvas></div>
+<div class="metric"><span class="m-label">NET</span><span class="m-val">18%</span><canvas id="sp-net" width="56" height="20"></canvas></div>
+<div class="metric"><span class="m-label">DISK</span><span class="m-val">62%</span><canvas id="sp-disk" width="56" height="20"></canvas></div>
+</div>
+<div class="stat-row">
+<div><span class="s-label">UPTIME</span><span class="s-val">99.99%</span></div>
+<div><span class="s-label">RESPONSE TIME</span><span class="s-val">0.021s</span></div>
+<div><span class="s-label">REQUESTS / DAY</span><span class="s-val">2.4M</span></div>
+<div><span class="s-label">TOKENS / DAY</span><span class="s-val">128.7M</span></div>
+</div></div>
+<div class="panel flex-grow"><div class="panel-head"><span class="panel-title">◈ AGENTS</span><span class="badge-soft">ACTIVE: 8</span></div>
+<ul class="agent-list">
+<li><span class="a-icon">⬡</span><div><b>Architect Agent</b><small>Designing System</small></div><span class="status active">● ACTIVE</span></li>
+<li><span class="a-icon"></></span><div><b>Coding Agent</b><small>Writing Backend</small></div><span class="status active">● ACTIVE</span></li>
+<li><span class="a-icon">▣</span><div><b>Database Agent</b><small>Optimizing Queries</small></div><span class="status active">● ACTIVE</span></li>
+<li><span class="a-icon">🛡</span><div><b>Security Agent</b><small>Scanning Vulnerabilities</small></div><span class="status idle">○ IDLE</span></li>
+<li><span class="a-icon">⌕</span><div><b>Research Agent</b><small>Gathering Information</small></div><span class="status active">● ACTIVE</span></li>
+<li><span class="a-icon">⚙</span><div><b>DevOps Agent</b><small>Preparing Deployment</small></div><span class="status active">● ACTIVE</span></li>
+<li><span class="a-icon">✓</span><div><b>Testing Agent</b><small>Running Test Cases</small></div><span class="status idle">○ IDLE</span></li>
+<li><span class="a-icon">◇</span><div><b>UI/UX Agent</b><small>Designing Interface</small></div><span class="status active">● ACTIVE</span></li>
+</ul><button class="link-btn">VIEW ALL AGENTS →</button></div>
+<div class="panel"><div class="panel-head"><span class="panel-title">◈ KNOWLEDGE BASE</span></div>
+<div class="kb-stats">
+<div><span class="s-label">TOTAL DOCUMENTS</span><span class="s-val">12,458</span></div>
+<div><span class="s-label">EMBEDDINGS</span><span class="s-val accent">98.3%</span></div>
+<div><span class="s-label">LAST SYNC</span><span class="s-val">2m ago</span></div>
+</div>
+<div class="doc"><span class="dot purple"></span> SaaS_Architecture_Guide.md</div>
+<div class="doc"><span class="dot blue"></span> Database_Schema.sql</div>
+<div class="doc"><span class="dot orange"></span> API_Integration_Plan.pdf</div>
+<div class="doc"><span class="dot cyan"></span> Marketing_Strategy.md</div>
+<div class="doc"><span class="dot green"></span> User_Research.xlsx</div>
+<button class="link-btn">VIEW ALL →</button></div></section>
+<section class="col-center">
+<div class="panel brain-panel">
+<div class="brain-meta">
+<div class="meta-card"><span style="color:var(--purple)">◆</span><div><b>OBSIDIAN</b><small>LONG TERM MEMORY</small><em style="color:var(--ok);font-style:normal;font-size:10px;font-weight:600">CONNECTED</em></div></div>
+<div class="brain-stats">
+<div><span>NEURAL LAYERS</span><b>128</b></div>
+<div><span>SYNAPSES</span><b>2.7T</b></div>
+<div><span>MEMORY NODES</span><b>1.2B</b></div>
+<div><span>LEARNING RATE</span><b>0.37</b></div>
+</div></div>
+<div class="brain-stage">
+<div class="brain-title">PARI CORE BRAIN <span class="pill">ACTIVE</span></div>
+<canvas id="brain-canvas" width="420" height="260"></canvas>
+<div class="brain-quote">"I THINK, THEREFORE I AM." — PARI</div>
+</div>
+<div class="brain-meta">
+<div class="meta-card"><span style="color:var(--gold)">✦</span><div><b>HERMES</b><small>REASONING ENGINE</small><em style="color:var(--ok);font-style:normal;font-size:10px;font-weight:600">CONNECTED</em></div></div>
+<div class="brain-stats">
+<div><span>THINKING DEPTH</span><b>8 LEVELS</b></div>
+<div><span>CONTEXT WINDOW</span><b>200K</b></div>
+<div><span>REASONING MODE</span><b>DEEP</b></div>
+<div><span>CREATIVITY</span><b>87%</b></div>
+</div></div></div>
+<div class="center-bottom">
+<div class="panel"><div class="panel-head"><span class="panel-title">↑ MEMORY VISUALIZER</span><select class="mini-select"><option>Long Term Memory</option></select></div>
+<canvas id="mem-canvas" width="260" height="100"></canvas>
+<div class="mem-footer"><span>TOTAL NODES <b>1,245,678,901</b></span><span>CONNECTED <b class="accent">98.7%</b></span></div></div>
+<div class="panel"><div class="panel-head"><span class="panel-title">◈ REASONING TRACE</span></div>
+<ol class="trace">
+<li><span class="t-step">INPUT ANALYSIS</span><small>Understand user intent</small></li>
+<li><span class="t-step">CONTEXT RETRIEVAL</span><small>Searching memory banks</small></li>
+<li><span class="t-step">LOGICAL REASONING</span><small>Selecting best action</small></li>
+<li class="active"><span class="t-step">ACTION EXECUTION</span><small>Calling agents / tools</small></li>
+</ol></div>
+<div class="panel"><div class="panel-head"><span class="panel-title">↑ NEURAL ACTIVITY</span></div>
+<canvas id="neural-canvas" width="260" height="100"></canvas>
+<div class="mem-footer"><span>NEURONS FIRING <b>87.3%</b></span><span>SYNAPSE ACTIVITY <b>931 / s</b></span></div></div>
+</div>
+<div class="panel"><div class="panel-head"><span class="panel-title">↑ TASKS & WORKFLOW</span>
+<div class="task-badges"><span class="tb run">RUNNING (5)</span><span class="tb done">COMPLETED (27)</span><span class="tb sched">SCHEDULED (8)</span></div></div>
+<table class="task-table"><thead><tr><th>TASK</th><th>AGENT</th><th>PROGRESS</th><th>TIME</th><th>STATUS</th></tr></thead>
+<tbody>
+<tr><td>Build CRM Module</td><td>Coding Agent</td><td><div class="bar"><i style="width:75%"></i></div>75%</td><td>12m</td><td class="st-run">In Progress</td></tr>
+<tr><td>Setup Database</td><td>Database Agent</td><td><div class="bar"><i style="width:100%"></i></div>100%</td><td>—</td><td class="st-done">Completed</td></tr>
+<tr><td>Design UI Kit</td><td>UI/UX Agent</td><td><div class="bar"><i style="width:60%"></i></div>60%</td><td>18m</td><td class="st-run">In Progress</td></tr>
+<tr><td>Security Audit</td><td>Security Agent</td><td><div class="bar"><i style="width:30%"></i></div>30%</td><td>25m</td><td class="st-run">In Progress</td></tr>
+<tr><td>Deploy to Production</td><td>DevOps Agent</td><td><div class="bar"><i style="width:0%"></i></div>0%</td><td>—</td><td class="st-pend">Pending</td></tr>
+</tbody></table>
+<button class="link-btn">VIEW ALL TASKS →</button></div>
+</section>
+<section class="col-right">
+<div class="panel"><div class="panel-head"><span class="panel-title">◈ VOICE INTERFACE</span></div>
+<div class="voice-ui"><canvas id="wave-canvas" width="240" height="32"></canvas><button class="mic-btn">🎤</button><span class="listening">Listening…</span></div></div>
+<div class="panel flex-grow"><div class="panel-head"><span class="panel-title">◈ CHAT CONSOLE</span></div>
+<div class="chat" id="chat">
+<div class="msg user"><div class="msg-meta">You <span>10:42 PM</span></div><div class="bubble">Build me a SaaS platform architecture.</div></div>
+<div class="msg bot"><div class="msg-meta">PARI <span>10:42 PM</span></div><div class="bubble"><ul><li>Analyzing request…</li><li>Breaking down into tasks…</li><li>Calling Architect Agent…</li><li>Generating system design…</li></ul><div class="file-chip">📎 architecture_v2.drawio <small>2.4 MB</small></div></div></div>
+</div>
+<div class="chat-input"><input id="chat-input" placeholder="Ask me anything…"/><button class="send" id="send-btn">➤</button></div></div>
+<div class="panel"><div class="panel-head"><span class="panel-title">◈ TOOLS & INTEGRATIONS</span><button class="link-btn inline">MANAGE TOOLS</button></div>
+<div class="tools-grid">
+<div class="tool">Terminal</div><div class="tool">Browser</div><div class="tool">VS Code</div><div class="tool">GitHub</div><div class="tool">Figma</div>
+<div class="tool">Notion</div><div class="tool">Obsidian</div><div class="tool">Docker</div><div class="tool">PostgreSQL</div><div class="tool">Redis</div>
+<div class="tool">Telegram</div><div class="tool">Gmail</div><div class="tool">Calendar</div><div class="tool">Drive</div><div class="tool">Slack</div>
+<div class="tool">Stripe</div><div class="tool">Cloudflare</div><div class="tool">AWS</div><div class="tool">Supabase</div><div class="tool more">+ More</div>
+</div></div>
+<div class="panel"><div class="panel-head"><span class="panel-title">◈ SYSTEM MONITOR</span></div>
+<div class="mon-grid">
+<div><span class="s-label">NETWORK TRAFFIC</span><span class="s-val">124 MB/s</span><canvas id="mc-0" width="90" height="24"></canvas></div>
+<div><span class="s-label">TOKEN USAGE</span><span class="s-val">2.4M / 10M</span><canvas id="mc-1" width="90" height="24"></canvas></div>
+<div><span class="s-label">API CALLS</span><span class="s-val">8,432 / min</span><canvas id="mc-2" width="90" height="24"></canvas></div>
+<div><span class="s-label">ERROR RATE</span><span class="s-val">0.02%</span><canvas id="mc-3" width="90" height="24"></canvas></div>
+<div><span class="s-label">QUEUE LENGTH</span><span class="s-val">23</span><canvas id="mc-4" width="90" height="24"></canvas></div>
+<div><span class="s-label">TEMPERATURE</span><span class="s-val">42°C</span><canvas id="mc-5" width="90" height="24"></canvas></div>
+</div></div>
+<div class="panel"><div class="panel-head"><span class="panel-title">◈ PARI ACTIVITY LOG</span><button class="link-btn inline">VIEW FULL LOG</button></div>
+<ul class="log">
+<li><time>10:42 PM</time> User request received</li>
+<li><time>10:42 PM</time> Intent recognized</li>
+<li><time>10:42 PM</time> Context loaded</li>
+<li><time>10:42 PM</time> Agents assigned</li>
+<li><time>10:42 PM</time> Tasks created</li>
+<li><time>10:42 PM</time> Execution started</li>
+</ul></div>
+</section></main>
+<footer class="footer">
+<div class="footer-brand"><span class="nexus">◈</span><div><b>PARI NEXUS OS</b><small>Enterprise Edition 2.4.1</small></div></div>
+<div class="voice-bar"><span class="vb-label">VOICE COMMAND:</span><span class="vb-hint">Hey Pari…</span><canvas id="vb-wave" width="140" height="20"></canvas><button class="vb-mic">🎤</button></div>
+<div class="footer-actions"><button>🎤</button><button>🔊</button><button>💬</button><button>▦</button><button>⚙</button><button>🔔</button><button>👤</button></div>
+</footer></div>
+<script src="app.js"></script></body></html>
