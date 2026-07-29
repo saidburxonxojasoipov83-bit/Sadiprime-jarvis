@@ -66,17 +66,85 @@ function wave(id){
   })();
 }
 wave("wave-canvas");wave("vb-wave");
-const chat=$("chat"), input=$("chat-input"), send=$("send-btn");
-function pushMsg(){
-  const v=(input.value||"").trim(); if(!v)return;
-  const t=new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
-  chat.insertAdjacentHTML("beforeend",`<div class="msg user"><div class="msg-meta">You <span>${t}</span></div><div class="bubble">${v.replace(/</g,"<")}</div></div>`);
-  input.value="";
-  setTimeout(()=>{chat.insertAdjacentHTML("beforeend",`<div class="msg bot"><div class="msg-meta">PARI <span>${t}</span></div><div class="bubble">Acknowledged. Routing to Core Orchestrator…</div></div>`);chat.scrollTop=chat.scrollHeight},400);
-  chat.scrollTop=chat.scrollHeight;
-}
-if(send)send.onclick=pushMsg;
-if(input)input.onkeydown=e=>{if(e.key==="Enter")pushMsg()};
 document.querySelectorAll(".tab").forEach(btn=>{
   btn.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active")};
 });
+
+function cfg(){ return window.PARI_CONFIG || {}; }
+function setOnline(ok, label){
+  const dot = document.querySelector(".online-dot");
+  const lab = document.querySelector(".online-label");
+  if (lab) lab.textContent = label || (ok ? "ONLINE" : "OFFLINE");
+  if (dot) {
+    dot.style.background = ok ? "var(--ok)" : "var(--warn)";
+    dot.style.boxShadow = ok ? "0 0 10px var(--ok)" : "0 0 10px var(--warn)";
+  }
+}
+async function hermesFetch(path, opts={}){
+  const base = (cfg().hermesBaseUrl || "").replace(/\/$/,"");
+  if (!base) throw new Error("HERMES_URL not set");
+  const headers = Object.assign({"Content-Type":"application/json"}, opts.headers||{});
+  if (cfg().apiKey) headers["Authorization"] = "Bearer " + cfg().apiKey;
+  return fetch(base + path, Object.assign({}, opts, { headers }));
+}
+async function checkHealth(){
+  if (!cfg().hermesBaseUrl) { setOnline(false, "NO URL"); return; }
+  try {
+    let ok = false;
+    for (const p of ["/setup/healthz","/health","/v1/models",""]) {
+      try {
+        const r = await hermesFetch(p, { method: "GET" });
+        if (r.ok || r.status === 401 || r.status === 404) { ok = true; break; }
+      } catch(e) {}
+    }
+    setOnline(ok, ok ? "ONLINE" : "OFFLINE");
+  } catch(e) { setOnline(false, "OFFLINE"); }
+}
+async function sendToHermes(text){
+  if (!cfg().hermesBaseUrl) return { error: "Hermes URL sozlanmagan. ONLINE ga ikki marta bosing." };
+  try {
+    const r = await hermesFetch("/v1/chat/completions", {
+      method: "POST",
+      body: JSON.stringify({ model: "default", messages: [{ role: "user", content: text }], stream: false })
+    });
+    if (!r.ok) return { error: "HTTP " + r.status + ": " + (await r.text()).slice(0,200) };
+    const data = await r.json();
+    const msg = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : JSON.stringify(data).slice(0,500);
+    return { text: msg };
+  } catch(e) { return { error: e.message || String(e) }; }
+}
+(function wireLiveChat(){
+  const chat = document.getElementById("chat");
+  const input = document.getElementById("chat-input");
+  const send = document.getElementById("send-btn");
+  if (!chat || !input || !send) return;
+  async function livePush(){
+    const v = (input.value||"").trim(); if (!v) return;
+    const t = new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    chat.insertAdjacentHTML("beforeend", `<div class="msg user"><div class="msg-meta">You <span>${t}</span></div><div class="bubble">${v.replace(/</g,"<")}</div></div>`);
+    input.value = ""; chat.scrollTop = chat.scrollHeight;
+    chat.insertAdjacentHTML("beforeend", `<div class="msg bot" id="pending-bot"><div class="msg-meta">PARI <span>${t}</span></div><div class="bubble">Thinking…</div></div>`);
+    chat.scrollTop = chat.scrollHeight;
+    const res = await sendToHermes(v);
+    const pending = document.getElementById("pending-bot"); if (pending) pending.remove();
+    const body = res.error ? `<span style="color:var(--warn)">⚠ ${res.error.replace(/</g,"<")}</span>` : (res.text||"").replace(/</g,"<").replace(/\n/g,"<br/>");
+    chat.insertAdjacentHTML("beforeend", `<div class="msg bot"><div class="msg-meta">PARI <span>${t}</span></div><div class="bubble">${body}</div></div>`);
+    chat.scrollTop = chat.scrollHeight;
+  }
+  send.onclick = livePush;
+  input.onkeydown = e => { if (e.key === "Enter") livePush(); };
+})();
+document.querySelector(".top-right")?.addEventListener("dblclick", () => {
+  const url = prompt("Hermes / Railway public URL:", cfg().hermesBaseUrl || "");
+  if (url === null) return;
+  localStorage.setItem("PARI_HERMES_URL", url.trim());
+  window.PARI_CONFIG.hermesBaseUrl = url.trim();
+  const key = prompt("API key (ixtiyoriy):", cfg().apiKey || "");
+  if (key !== null) {
+    localStorage.setItem("PARI_API_KEY", key.trim());
+    window.PARI_CONFIG.apiKey = key.trim();
+  }
+  checkHealth();
+});
+checkHealth();
+setInterval(checkHealth, (cfg().pollMs || 15000));
