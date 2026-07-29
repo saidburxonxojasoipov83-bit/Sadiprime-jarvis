@@ -70,46 +70,45 @@ document.querySelectorAll(".tab").forEach(btn=>{
   btn.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active")};
 });
 
-function cfg(){ return window.PARI_CONFIG || {}; }
+function cfg(){ return window.PARI_CONFIG || { hermesBaseUrl: "/api/hermes", apiKey: "", pollMs: 15000 }; }
 function setOnline(ok, label){
   const dot = document.querySelector(".online-dot");
   const lab = document.querySelector(".online-label");
   if (lab) lab.textContent = label || (ok ? "ONLINE" : "OFFLINE");
   if (dot) {
-    dot.style.background = ok ? "var(--ok)" : "var(--warn)";
-    dot.style.boxShadow = ok ? "0 0 10px var(--ok)" : "0 0 10px var(--warn)";
+    dot.style.background = ok ? "var(--ok)" : "#ffb020";
+    dot.style.boxShadow = ok ? "0 0 10px var(--ok)" : "0 0 10px #ffb020";
   }
 }
 async function hermesFetch(path, opts={}){
-  const base = (cfg().hermesBaseUrl || "").replace(/\/$/,"");
-  if (!base) throw new Error("HERMES_URL not set");
+  const base = (cfg().hermesBaseUrl || "/api/hermes").replace(/\/$/,"");
   const headers = Object.assign({"Content-Type":"application/json"}, opts.headers||{});
-  if (cfg().apiKey) headers["Authorization"] = "Bearer " + cfg().apiKey;
+  const key = cfg().apiKey || localStorage.getItem("PARI_API_KEY") || "";
+  if (key) headers["Authorization"] = "Bearer " + key;
   return fetch(base + path, Object.assign({}, opts, { headers }));
 }
 async function checkHealth(){
-  if (!cfg().hermesBaseUrl) { setOnline(false, "NO URL"); return; }
   try {
-    let ok = false;
-    for (const p of ["/setup/healthz","/health","/v1/models",""]) {
-      try {
-        const r = await hermesFetch(p, { method: "GET" });
-        if (r.ok || r.status === 401 || r.status === 404) { ok = true; break; }
-      } catch(e) {}
-    }
-    setOnline(ok, ok ? "ONLINE" : "OFFLINE");
+    const r = await hermesFetch("/v1/models", { method: "GET" });
+    if (r.ok) { setOnline(true, "ONLINE"); return; }
+    if (r.status === 401) { setOnline(true, "AUTH?"); return; }
+    setOnline(false, "HTTP " + r.status);
   } catch(e) { setOnline(false, "OFFLINE"); }
 }
 async function sendToHermes(text){
-  if (!cfg().hermesBaseUrl) return { error: "Hermes URL sozlanmagan. ONLINE ga ikki marta bosing." };
   try {
     const r = await hermesFetch("/v1/chat/completions", {
       method: "POST",
-      body: JSON.stringify({ model: "default", messages: [{ role: "user", content: text }], stream: false })
+      body: JSON.stringify({
+        model: "hermes-agent",
+        messages: [{ role: "user", content: text }],
+        stream: false
+      })
     });
-    if (!r.ok) return { error: "HTTP " + r.status + ": " + (await r.text()).slice(0,200) };
+    if (!r.ok) return { error: "HTTP " + r.status + ": " + (await r.text()).slice(0,300) };
     const data = await r.json();
-    const msg = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : JSON.stringify(data).slice(0,500);
+    const msg = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content)
+      || JSON.stringify(data).slice(0,800);
     return { text: msg };
   } catch(e) { return { error: e.message || String(e) }; }
 }
@@ -124,10 +123,11 @@ async function sendToHermes(text){
     chat.insertAdjacentHTML("beforeend", `<div class="msg user"><div class="msg-meta">You <span>${t}</span></div><div class="bubble">${v.replace(/</g,"<")}</div></div>`);
     input.value = ""; chat.scrollTop = chat.scrollHeight;
     chat.insertAdjacentHTML("beforeend", `<div class="msg bot" id="pending-bot"><div class="msg-meta">PARI <span>${t}</span></div><div class="bubble">Thinking…</div></div>`);
-    chat.scrollTop = chat.scrollHeight;
     const res = await sendToHermes(v);
     const pending = document.getElementById("pending-bot"); if (pending) pending.remove();
-    const body = res.error ? `<span style="color:var(--warn)">⚠ ${res.error.replace(/</g,"<")}</span>` : (res.text||"").replace(/</g,"<").replace(/\n/g,"<br/>");
+    const body = res.error
+      ? `<span style="color:#ffb020">⚠ ${String(res.error).replace(/</g,"<")}</span>`
+      : String(res.text||"").replace(/</g,"<").replace(/\n/g,"<br/>");
     chat.insertAdjacentHTML("beforeend", `<div class="msg bot"><div class="msg-meta">PARI <span>${t}</span></div><div class="bubble">${body}</div></div>`);
     chat.scrollTop = chat.scrollHeight;
   }
@@ -135,11 +135,12 @@ async function sendToHermes(text){
   input.onkeydown = e => { if (e.key === "Enter") livePush(); };
 })();
 document.querySelector(".top-right")?.addEventListener("dblclick", () => {
-  const url = prompt("Hermes / Railway public URL:", cfg().hermesBaseUrl || "");
+  const url = prompt("Hermes base URL (default /api/hermes):", cfg().hermesBaseUrl || "/api/hermes");
   if (url === null) return;
   localStorage.setItem("PARI_HERMES_URL", url.trim());
-  window.PARI_CONFIG.hermesBaseUrl = url.trim();
-  const key = prompt("API key (ixtiyoriy):", cfg().apiKey || "");
+  if (!window.PARI_CONFIG) window.PARI_CONFIG = {};
+  window.PARI_CONFIG.hermesBaseUrl = url.trim() || "/api/hermes";
+  const key = prompt("API_SERVER_KEY:", cfg().apiKey || "change-me-pari");
   if (key !== null) {
     localStorage.setItem("PARI_API_KEY", key.trim());
     window.PARI_CONFIG.apiKey = key.trim();
