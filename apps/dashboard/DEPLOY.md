@@ -1,18 +1,19 @@
-# Dashboard Railway deploy
+# PARI + Hermes (Railway)
 
-## 1. Yangi service
-Railway project:
-1. **+ New** → **GitHub Repo** → Sadiprime-jarvis
-2. **Root Directory** = `apps/dashboard`
-3. Dockerfile builder
+## Hermes variables
+```
+API_SERVER_ENABLED=true
+API_SERVER_HOST=0.0.0.0
+API_SERVER_PORT=8642
+API_SERVER_KEY=change-me-pari
+```
+Redeploy Hermes service.
 
-## 2. Domain
-Settings → Networking → Generate Domain
+## Dashboard service
+Root Directory: `apps/dashboard`
+```
+HERMES_UPSTREAM=http://<HERMES_SERVICE_NAME>.railway.internal:8642
+```
 
-## 3. Hermes URL
-ONLINE ga double-click:
-- Proxy: `/api/hermes` (default)
-- Yoki to'g'ridan: `https://YOUR-HERMES.up.railway.app`
-
-## 4. Private network
-nginx.conf dagi `hermes.railway.internal` ni Hermes service nomiga moslang.
+## Chat auth
+ONLINE double-click → API key = `change-me-pari`
